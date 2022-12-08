@@ -1,10 +1,12 @@
 import { Router } from "express";
-import categories from "./categoriesRouter";
-import clients from "./ClientsRouter";
-import games from "./gamesRouter";
-import rentals from "./rentalsRouter";
+import categories from "./categoriesRouter.js";
+import clients from "./clientsRouter.js";
+import games from "./gamesRouter.js";
+import rentals from "./rentalsRouter.js";
 
 const router = Router();
+
+/* vericar a connetionstring */
 
 router.use(categories);
 router.use(clients);
