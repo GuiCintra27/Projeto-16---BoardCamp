@@ -7,7 +7,7 @@ export async function getGames(req, res) {
         JOIN categories 
         on games.categoryId = categories.id;`
     );
-    res.send(games.rows);
+    return res.send(games.rows);
 }
 
 export async function postGames(req, res) {
@@ -18,5 +18,5 @@ export async function postGames(req, res) {
         VALUES ($1, $2, $3, $4, $5)`, [name, image, stockTotal, categoryId, pricePerDay]
     );
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
 }

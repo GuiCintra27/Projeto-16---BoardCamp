@@ -2,7 +2,7 @@ import connection from "../database/database.js";
 
 export async function getCategories(req, res) {
     const categories = await connection.query(`SELECT * FROM categories`);
-    res.send(categories.rows);
+    return res.send(categories.rows);
 }
 
 export async function postCategories(req, res) {
@@ -10,5 +10,5 @@ export async function postCategories(req, res) {
 
     await connection.query(`INSERT INTO categories (name) VALUES ($1)`, [name]);
     
-    res.sendStatus(201);
+    return res.sendStatus(201);
 }
