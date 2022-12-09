@@ -12,7 +12,8 @@ export async function getCustomers(req, res) {
     const customers = await connection.query(
         `SELECT * 
             FROM customers
-            WHERE cpf LIKE $1`,
+            WHERE cpf 
+            LIKE $1`,
             [cpf + '%']
     );
 
