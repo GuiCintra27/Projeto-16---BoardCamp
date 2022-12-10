@@ -1,36 +1,15 @@
 import connection from "../database/database.js";
 
 export async function getCustomers(req, res) {
-    const { cpf } = req.query;
+    const customers = req.getCustomers
 
-    if (!cpf) {
-        const customers = await connection.query(`SELECT * FROM customers`);
-
-        return res.send(customers.rows);
-    }
-
-    const customers = await connection.query(
-        `SELECT * 
-            FROM customers
-            WHERE cpf 
-            LIKE $1`,
-            [cpf + '%']
-    );
-
-    return res.send(customers.rows);
+    return res.send(customers);
 }
 
-export async function getOneCustomer(req, res) {
-    const { id } = req.params;
+export async function getCustomersById(req, res) {
+    const customers = req.getCustomersById;
 
-    const customers = await connection.query(
-        `SELECT * 
-            FROM customers
-            WHERE id = $1`,
-        [id]
-    );
-
-    return res.send(customers.rows);
+    return res.send(customers);
 }
 
 export async function postCustomers(req, res) {
