@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { getRentals, postRental, returnRental, deleteRental } from "../controllers/rentalsController.js";
+import { getRentals, returnRental, deleteRental, insertRental } from "../controllers/rentalsController.js";
+import { deleteRentalValidation, getRentalsValidation, insertRentalValidation, returnRentalValidation } from "../middlewares/rentalsValidation.js";
 
 const rentals = Router();
 
-rentals.get("/rentals", getRentals);
-rentals.post("/rentals", postRental);
-rentals.post("/rentals/:id/return", returnRental);
-rentals.delete("/rentals/:id", deleteRental);
+rentals.get("/rentals", getRentalsValidation, getRentals);
+rentals.post("/rentals", insertRentalValidation, insertRental);
+rentals.post("/rentals/:id/return", returnRentalValidation, returnRental);
+rentals.delete("/rentals/:id", deleteRentalValidation, deleteRental);
 
 export default rentals;
