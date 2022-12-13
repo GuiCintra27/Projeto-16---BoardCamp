@@ -1,5 +1,5 @@
 import connection from "../database/database.js";
-import { customersModel } from "../models/customersModel.js";
+import { customersModel, updateCustomerModel } from "../models/customersModel.js";
 
 export async function getCustomersValidation(req, res, next) {
     const { cpf } = req.query;
@@ -54,6 +54,29 @@ export async function customerValidation(req, res, next) {
     FROM customers
     WHERE cpf = $1`,
         [cpf]
+    );
+
+    if (error) {
+        return res.sendStatus(400);
+    } else if (cpfExists.rows.length > 0) {
+        return res.sendStatus(409);
+    }
+
+    next();
+}
+
+export async function updateCustomerValidation(req, res, next) {
+    const { cpf } = req.body;
+    const { id } = req.params;
+
+    const { error } = updateCustomerModel.validate(req.body, { abortEarly: false });
+
+    const cpfExists = await connection.query(`
+    SELECT *
+    FROM customers
+    WHERE cpf = $1 
+    AND id <> $2`,
+        [cpf, id]
     );
 
     if (error) {
