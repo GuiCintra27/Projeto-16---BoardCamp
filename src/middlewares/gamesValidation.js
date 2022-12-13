@@ -19,7 +19,7 @@ export async function getGamesValidation(req, res, next) {
     } else {
         const games = await connection.query(`
             SELECT games.*, 
-            categories.name as categoryName 
+            categories.name as "categoryName" 
             FROM games 
             JOIN categories 
             ON games."categoryId" = categories.id;`
