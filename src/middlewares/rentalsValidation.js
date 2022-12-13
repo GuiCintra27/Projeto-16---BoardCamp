@@ -14,17 +14,17 @@ export async function getRentalsValidation(req, res, next) {
             SELECT id, name 
             FROM customers
             WHERE id = $1`,
-                [rentals.rows[i].customerid]
+                [rentals.rows[i].customerId]
             );
 
             const game = await connection.query(`
-            SELECT games.id, games.name, games.categoryId, 
+            SELECT games.id, games.name, games."categoryId", 
             categories.name AS categoryName 
             FROM games 
             JOIN categories 
-            ON games.categoryId = categories.id
+            ON games."categoryId" = categories.id
             WHERE games.id = $1`,
-                [rentals.rows[i].gameid]
+                [rentals.rows[i].gameId]
             );
 
             const data = await { ...rentals.rows[i], customer: customer.rows[0], game: game.rows[0] };
@@ -37,8 +37,8 @@ export async function getRentalsValidation(req, res, next) {
         const rentals = await connection.query(`
         SELECT * 
         FROM rentals
-        WHERE customerId = $1
-        AND gameId = $2`,
+        WHERE "customerId" = $1
+        AND "gameId" = $2`,
             [customerId, gameId]
         );
 
@@ -47,7 +47,7 @@ export async function getRentalsValidation(req, res, next) {
         const rentals = await connection.query(`
         SELECT * 
         FROM rentals
-        WHERE customerId = $1`,
+        WHERE "customerId" = $1`,
             [customerId]
         );
 
@@ -56,7 +56,7 @@ export async function getRentalsValidation(req, res, next) {
         const rentals = await connection.query(`
         SELECT * 
         FROM rentals
-        WHERE gameId = $1`,
+        WHERE "gameId" = $1`,
             [gameId]
         );
 
@@ -97,13 +97,14 @@ export async function insertRentalValidation(req, res, next) {
         return res.sendStatus(400);
     }
 
-    const gameStock = gameExists.rows[0].stocktotal;
+    const gameStock = gameExists.rows[0].stockTotal;
 
     const rentedGames = await connection.query(`
     SELECT 
     COUNT(*)
     FROM rentals
-    WHERE gameId = $1`,
+    WHERE "gameId" = $1
+    AND "returnDate" is null`,
         [gameId]
     );
 
@@ -111,9 +112,14 @@ export async function insertRentalValidation(req, res, next) {
         return res.sendStatus(400);
     }
 
-    let price = await connection.query(`SELECT pricePerDay FROM games WHERE id = $1`, [gameId]);
+    let price = await connection.query(`
+    SELECT "pricePerDay" 
+    FROM games 
+    WHERE id = $1`,
+        [gameId]
+    );
 
-    price = price.rows[0].priceperday;
+    price = price.rows[0].pricePerDay;
 
     req.price = price;
 
@@ -124,7 +130,7 @@ export async function returnRentalValidation(req, res, next) {
     const { id } = req.params;
 
     const rental = await connection.query(`
-        SELECT rentDate, daysRented, gameId 
+        SELECT "rentDate", "daysRented", "gameId" 
         FROM rentals 
         WHERE id = $1`,
         [id]
@@ -135,32 +141,32 @@ export async function returnRentalValidation(req, res, next) {
     }
 
     const dateNow = new Date(date);
-    const rentDate = new Date(rental.rows[0].rentdate);
+    const rentDate = new Date(rental.rows[0].rentDate);
     const difference = Math.abs(dateNow.getTime() - rentDate.getTime());
     const daysUsed = Math.ceil(difference / (1000 * 60 * 60 * 24));
 
     if (daysUsed > rental.rows[0].daysrented) {
-        const daysExceeded = daysUsed - rental.rows[0].daysrented;
+        const daysExceeded = daysUsed - rental.rows[0].daysRented;
 
         const pricePerDay = await connection.query(`
-        SELECT pricePerDay
+        SELECT "pricePerDay"
         FROM games
         WHERE id = $1`,
-            [rental.rows[0].gameid]
+            [rental.rows[0].gameId]
         );
 
-        const fine = pricePerDay.rows[0].priceperday;
+        const fine = pricePerDay.rows[0].pricePerDay;
 
         await connection.query(`
             UPDATE rentals
-            SET returnDate = $1, delayFee = $2
+            SET "returnDate" = $1, "delayFee" = $2
             WHERE id = $3`,
-            [date, fine*daysExceeded, id]
+            [date, fine * daysExceeded, id]
         );
-    }else{
+    } else {
         await connection.query(`
             UPDATE rentals
-            SET returnDate = $1, delayFee = 0
+            SET "returnDate" = $1, "delayFee" = 0
             WHERE id = $2`,
             [date, id]
         );
@@ -182,7 +188,7 @@ export async function deleteRentalValidation(req, res, next) {
 
     if (rentalExists.rows.length === 0) {
         return res.sendStatus(404);
-    } else if (rentalExists.rows[0].returndate === null) {
+    } else if (rentalExists.rows[0].returnDate === null) {
         return res.sendStatus(400);
     }
 

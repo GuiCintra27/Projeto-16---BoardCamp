@@ -17,8 +17,8 @@ export async function insertRental(req, res) {
     await connection.query(`
         INSERT 
         INTO rentals (
-            customerId, gameId, rentDate, daysRented, returnDate, 
-            originalPrice, delayFee
+            "customerId", "gameId", "rentDate", "daysRented", "returnDate", 
+            "originalPrice", "delayFee"
         ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [customerId, gameId, date, daysRented, null, price * daysRented, null]
     );

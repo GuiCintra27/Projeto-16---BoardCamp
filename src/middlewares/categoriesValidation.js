@@ -16,9 +16,6 @@ export async function categoriesValidation(req, res, next){
     FROM categories 
     WHERE name = $1`,
     [name]);
-    
-        console.log(name)
-        console.log(isName)
 
     if (isName.rows.length > 0){
         return res.sendStatus(409);

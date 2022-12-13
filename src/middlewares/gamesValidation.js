@@ -7,10 +7,10 @@ export async function getGamesValidation(req, res, next) {
     if (name) {
         const games = await connection.query(`
             SELECT games.*, 
-            categories.name as categoryName 
+            categories.name as "categoryName" 
             FROM games 
             JOIN categories 
-            ON games.categoryId = categories.id
+            ON games."categoryId" = categories.id
             WHERE LOWER(games.name) LIKE $1`,
             [name + '%']
         );
@@ -18,10 +18,11 @@ export async function getGamesValidation(req, res, next) {
         req.getGames = games.rows;
     } else {
         const games = await connection.query(`
-            SELECT games.*, categories.name as categoryName 
+            SELECT games.*, 
+            categories.name as categoryName 
             FROM games 
             JOIN categories 
-            ON games.categoryId = categories.id;`
+            ON games."categoryId" = categories.id;`
         );
 
         req.getGames = games.rows;
