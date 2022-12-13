@@ -39,7 +39,7 @@ export async function getCustomersByIdValidation(req, res, next) {
         return res.sendStatus(404);
     }
 
-    req.getCustomersById = customers.rows;
+    req.getCustomersById = customers.rows[0];
 
     next();
 }
